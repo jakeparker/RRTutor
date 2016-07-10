@@ -1,0 +1,21 @@
+{
+  "name": "RRTutor",
+  "version": "0.0.1",
+  "authors": [
+    "Jake Parker <jlparker@andrew.cmu.edu"
+  ],
+  "description": "",
+  "main": "RRTutor.html",
+  "keywords": [
+    "",
+    ""
+  ],
+  "license": "",
+  "ignore": [
+    "",
+    ""
+  ],
+  "dependencies": {
+    "foundation-sites": "~6.0.4"
+  }
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    <meta charset="UTF-8" />
+    <title>matrix row reduction interface</title>
+    <script>
+      
+      "use strict";
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+      
+      function main() {
+        var mat = new Matrix(20, 20, 3, 4);
+        mat.draw();
+      }
+      
+      class Matrix {
+        constructor(x, y, rows, cells) {
+          this.x = x;
+          this.y = y;
+          this.rows = rows;
+          this.cells = cells;
+          this.cellSpacing = 33;
+          this.rowSpacing = 15;
+          this.horzSpacing = 15;
+          this.vertSpacing = 10;
+          this.cellWidth = 22;
+          this.cellHeight = 22;
+          this.rowWidth =  this.cells*this.cellWidth + ( this.cells-1)*this.cellSpacing;
+          this.rowHeight =  this.cellHeight;
+          this.tableWidth =  this.rowWidth;
+          this.tableHeight =  this.rows*this.rowHeight + (this.rows-1)*this.rowSpacing;
+          this.matrixWidth =  this.tableWidth + 2*this.horzSpacing;
+          this.matrixHeight =  this.tableHeight + 2*this.vertSpacing;
+          this.rowArray = new Array();
+          this.init();
+        }
+        init() {
+          var x = this.x + this.horzSpacing;
+          var y = this.y + this.vertSpacing;
+          for (var i=0; i<this.rows; i++) {
+            var row = new Row(x, y, this.rowWidth, this.rowHeight, this.cellSpacing, this.cellWidth, this.cellHeight, this.cells);
+            this.rowArray.push(row);
+            y = y + this.rowHeight + this.rowSpacing;
+          }
+        }
+        draw() {
+          var len = this.rowArray.length;
+          for (var i=0; i<len; i++) {
+            var row = this.rowArray[i];
+            row.draw();
+          }
+          ctx.strokeStyle = 'black';
+          ctx.beginPath();
+          ctx.lineCap = 'square';
+          ctx.lineJoin = 'miter';
+          ctx.lineWidth = 3;
+          ctx.moveTo(this.x+this.horzSpacing/2, this.y+.5);
+          ctx.lineTo(this.x+.5, this.y+.5);
+          ctx.lineTo(this.x+.5, this.y+this.matrixHeight+.5);
+          ctx.lineTo(this.x+this.horzSpacing/2, this.y+this.matrixHeight+.5);
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.moveTo(this.x+this.matrixWidth-this.horzSpacing-this.cellWidth-this.cellSpacing/2, this.y+1.5);
+          ctx.lineTo(this.x+this.matrixWidth-this.horzSpacing-this.cellWidth-this.cellSpacing/2, this.y+this.matrixHeight-1.5);
+          ctx.stroke();
+          ctx.lineWidth = 3;
+          ctx.moveTo(this.x+this.matrixWidth-this.horzSpacing/2, this.y+.5);
+          ctx.lineTo(this.x+this.matrixWidth+.5, this.y+.5);
+          ctx.lineTo(this.x+this.matrixWidth+.5, this.y+this.matrixHeight+.5);
+          ctx.lineTo(this.x+this.matrixWidth-this.horzSpacing/2, this.y+this.matrixHeight+.5);
+          ctx.stroke();
+          ctx.closePath();
+        }
+      }
+      class Row {
+        constructor(x, y, width, height, cellSpacing, cellWidth, cellHeight, cells) {
+          this.x = x;
+          this.y = y;
+          this.width = width;
+          this.height = height;
+          this.cellSpacing = cellSpacing;
+          this.cellWidth = cellWidth;
+          this.cellHeight = cellHeight;
+          this.cells = cells;
+          this.cellArray = new Array();
+          this.init();
+        }
+        init() {
+          var x = this.x;
+          for (var j=0; j<this.cells; j++) {
+            var cell = new Cell(x, this.y, this.cellWidth, this.cellHeight);
+            this.cellArray.push(cell);
+            x = x + this.cellWidth + this.cellSpacing;
+          }
+        }
+        draw() {
+          ctx.fillStyle = "#DEDEDE";
+          ctx.fillRect(this.x, this.y, this.width, this.height);
+          
+          var len = this.cellArray.length;
+          for (var j=0; j<len; j++) {
+            var cell = this.cellArray[j];
+            cell.draw(ctx);
+          }
+        }
+      }
+      class Cell {
+        constructor(x, y, width, height) {
+          this.x = x;
+          this.y = y;
+          this.width = width;
+          this.height = height;
+        }
+        draw() {
+          ctx.strokeStyle = "#000000";
+          ctx.strokeRect(this.x+.5,this.y+.5,this.width,this.height);
+        }
+      }
+    </script>
+  </head>
+  
+  <body onload="main();">
+    <canvas id="canvas" width="300" height="300"></canvas>
+  </body>
+  
+</html>
+

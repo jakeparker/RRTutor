@@ -1,0 +1,7 @@
+(require* wmeTypes "wmeTypes.clp")
+
+;; ---------------------------------
+
+(bind ?ie0)
+
+(bind ?prob (assert (problem)))

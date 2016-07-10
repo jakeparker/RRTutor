@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="vendor/foundation-sites/dist/foundation.min.css"/>
+    <link rel="stylesheet" href="CTAT.css"/>
+
+    <style>
+      [draggable] {
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-user-drag: none;
+        user-drag: none;
+      }
+      .column {
+        cursor: move;
+        pointer-events: all;
+      }
+      #matrix .column.over {
+        border: 1px dashed #000;
+      }
+      #matrix .column.moving {
+        opacity: 0.25;
+      }
+    </style>
+
+    <script src="vendor/jquery/dist/jquery.min.js"></script>
+    <script src="vendor/foundation-sites/dist/foundation.min.js"></script>
+    <script src="ctat.min.js"></script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+
+    <script>
+//      java -DDebugCodes=tsltsp,tsltstp,collab -cp ".;..;lib\ctat.jar" edu.cmu.pact.TutoringService.LauncherServer -t 1499 -h 8081
+
+      var skills = 'TODO';
+      var tutorConfiguration = CTATGlobalFunctions.generateDefaultConfiguration ();
+      //CTATGlobalFunctions.setTutorValue (tutorConfiguration,'question_file','TODO');
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'skills',skills);
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'remoteSocketURL','localhost');
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'remoteSocketPort', '8888');
+//      CTATGlobalFunctions.setCommunicationMode (tutorConfiguration, 'http'); //http, javascript ..
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'tutoring_service_communication','javascript');
+      $(function()
+      {
+        initTutor(tutorConfiguration);
+          commShell.assignGradingHandler(function(str, msg) {
+            if (msg.getGradeResult() == "incorrect") {
+              //TODO
+              processIncorrect(msg.getSelection(), msg.getAction(), msg.getInput());
+              console.log("incorrect!");
+            } else {
+              //TODO
+              processCorrect(msg.getSelection(), msg.getAction(), msg.getInput());
+              //clearFrozen(); // ???
+              console.log("correct!");
+            }
+          });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="matrixInterface" class="container" style="position: relative"></div>
+    <script>
+      $(document).foundation();
+    </script>
+  </body>
+
+  <script src="matrixInterface.js"></script>
+  <script src="dragAndDrop.js"></script>
+  <script src="rowOperationInterface.js"></script>
+  <script src="grading.js"></script>
+</html>

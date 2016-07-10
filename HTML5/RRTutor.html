@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Row Reduction Tutor</title>
+
+    <link rel="stylesheet" href="vendor/foundation-sites/dist/foundation.min.css"/>
+    <link rel="stylesheet" href="CTAT.css"/>
+
+    <style>
+      li {
+        display: inline-block;
+        vertical-align: top;
+      }
+      .fullWidth {
+         width: 100%;
+         margin-left: auto;
+         margin-right: auto;
+         max-width: initial;
+      }
+      [draggable] {
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-user-drag: none;
+        user-drag: none;
+      }
+      #matrix .column.over {
+        border: 1px dashed #000;
+      }
+      #matrix .column.moving {
+        opacity: 0.25;
+      }
+    </style>
+
+    <script src="vendor/jquery/dist/jquery.min.js"></script>
+    <script src="vendor/foundation-sites/dist/foundation.min.js"></script>
+    <script src="ctat.min.js"></script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+    </script>
+    <script type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+
+    <script>
+//      java -DDebugCodes=tsltsp,tsltstp,collab -cp ".;..;lib\ctat.jar" edu.cmu.pact.TutoringService.LauncherServer -t 1499 -h 8081
+
+      var skills = 'TODO';
+      var tutorConfiguration = CTATGlobalFunctions.generateDefaultConfiguration ();
+//    CTATGlobalFunctions.setTutorValue (tutorConfiguration,'question_file','TODO');
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'question_file','TODO');
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'skills',skills);
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'remoteSocketURL','localhost');
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'remoteSocketPort', '8888');
+      //      CTATGlobalFunctions.setCommunicationMode (tutorConfiguration, 'http'); //http, javascript ..
+      CTATGlobalFunctions.setTutorValue (tutorConfiguration,'tutoring_service_communication','javascript');
+      $(function()
+      {
+        initTutor(tutorConfiguration);
+          commShell.assignGradingHandler(function(str, msg) {
+            if (msg.getGradeResult() == "incorrect") {
+              //TODO
+              processIncorrect(msg.getSelection(), msg.getAction(), msg.getInput());
+              console.log("incorrect!");
+            } else {
+              //TODO
+              processCorrect(msg.getSelection(), msg.getAction(), msg.getInput());
+              // clearFrozen(); // ???
+              console.log("correct!");
+            }
+          });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="top-bar">
+      <div class="row">
+        <div class="top-bar-left">
+          <ul class="menu">
+            <li class="menu-text">Row Reduction Tutor</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="container">
+      <div class="row">
+        <div class="medium-8 columns">
+          Determine the current $I_{1}$, $I_{2}$, and $I_{3}$ in the electrical network.
+          <br/><br/>
+          <img src="media/svg/problems/problem_1.svg"></img>
+          <br/><br/>
+          This network has two batteries and four resistors. Current $I_{1}$ flows through the top branch $BCA$, current $I_{2}$ flows through the middle branch $AB$, and current $I_{3}$ flows through the bottom branch $BDA$.
+          <br/><br/>
+        </div>
+        <div class="medium-4 columns">
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-6 columns">
+          Apply the current law about each node.
+          <ul>
+            <li style="padding-left: 20px">A</li>
+            <li>
+              <div id="nodeA_TextInput" class="CTATTextInput" style="width: 150%"></div>
+            </li>
+          </ul>
+          <ul>
+            <li style="padding-left: 20px">B</li>
+            <li>
+              <div id="nodeB_TextInput" class="CTATTextInput" style="width: 150%"></div>
+            </li>
+          </ul>
+          <ul>
+            <li style="padding-left: 20px">C</li>
+            <li>
+              <div id="nodeC_TextInput" class="CTATTextInput" style="width: 150%"></div>
+            </li>
+          </ul>
+          <ul>
+            <li style="padding-left: 20px">D</li>
+            <li>
+              <div id="nodeD_TextInput" class="CTATTextInput" style="width: 150%"></div>
+            </li>
+          </ul>
+        </div>
+        <div class="medium-6 columns">
+          Apply the voltage law about each circuit.
+          <ul>
+            <li>
+              <div id="circuitCABC_ComboBox" class="CTATComboBox" style="display: inline-block; padding-left: 20px">
+            </li>
+            <li>
+              <div id="circuitCABC_TextInput" class="CTATTextInput" style="width: 150%"></div>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <div id="circuitDABD_ComboBox" class="CTATComboBox" style="display: inline-block; padding-left: 20px">
+            </li>
+            <li>
+              <div id="circuitDABD_TextInput" class="CTATTextInput" style="width: 150%"></div>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <div id="circuitCADBC_ComboBox" class="CTATComboBox" style="display: inline-block; padding-left: 20px">
+            </li>
+            <li>
+              <div id="circuitCADBC_TextInput" class="CTATTextInput" style="width: 150%"></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-12 columns container" style="position: absolute">
+          <br/><br/>
+          Write out a system of linear equations, and then express it as an augmented matrix.
+          <div id="currentLaw" class="container" style="position: absolute; top: 80px">
+            <ul>
+              <li>
+                <div id="eq1a_TextInput" class="CTATTextInput" style="width: 100%; padding-left: 20px"></div>
+              </li>
+              <li style="padding-left: 10px">=</li>
+              <li>
+                <div id="eq1b_TextInput" class="CTATTextInput" style="width: 50%; padding-left: 10px"></div>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <div id="eq2a_TextInput" class="CTATTextInput" style="width: 100%; padding-left: 20px"></div>
+              </li>
+              <li style="padding-left: 10px">=</li>
+              <li>
+                <div id="eq2b_TextInput" class="CTATTextInput" style="width: 50%; padding-left: 10px"></div>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <div id="eq3a_TextInput" class="CTATTextInput" style="width: 100%; padding-left: 20px"></div>
+              </li>
+              <li style="padding-left: 10px">=</li>
+              <li>
+                <div id="eq3b_TextInput" class="CTATTextInput" style="width: 50%; padding-left: 10px"></div>
+              </li>
+            </ul>
+          </div>
+          <div id="selectNumRows_ComboBox" class="CTATComboBox" style="position: absolute; top: 80px; left: 530px; width: 100px; height: 22px"></div>
+          <div id="selectNumCols_ComboBox" class="CTATComboBox" style="position: absolute; top: 110px; left: 530px; width: 100px; height: 22px"></div>
+          <div id="fillInMatrix" class="container" style="position: absolute; top: 80px; left: 650px"></div>
+        </div>
+      </div>
+      <br/><br/>
+      <br/><br/>
+      <br/><br/>
+      <div class="row">
+        <div class="medium-12 columns fullWidth">
+          <br/><br/>
+          Use elementary row operations to reduce the matrix to reduced row echelon form.
+          <br/><br/>
+          <div id="rowReduceMatrix" class="container" style="position: relative"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-6 columns">
+          <br/><br/>
+          <br/><br/>
+          <br/><br/>
+          <br/><br/>
+          <div id="HintWindow" class="CTATHintWindow" style="width: 100%;"></div>
+        </div>
+        <div class="medium-4 columns">
+          <br/><br/>
+          <br/><br/>
+          <br/><br/>
+          <br/><br/>
+          <div id="skills" class="CTATSkillWindow" style="width: 100%;"></div>
+        </div>
+        <div class="medium-2 columns">
+          <br/><br/>
+          <br/><br/>
+          <br/><br/>
+          <br/><br/>
+          <div id="hint" class="CTATHintButton" tabindex="9" style="float: left; margin: 0 auto;"></div>
+          <div id="done" class="CTATDoneButton" tabindex="10" style="float: right; margin: 0 auto;"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(document).foundation();
+    </script>
+    <script src="matrix.js"></script>
+    <script src="dragAndDrop.js"></script>
+    <script src="rowReductionInterface.js"></script>
+    <script src="grading.js"></script>
+  </body>
+</html>
